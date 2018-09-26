@@ -4,6 +4,15 @@ from discord.ext import commands
 import asyncio
 import time
 
+from pdparser import PDParser
+
+def recognize(_word, _importlist, _avloeyserlist):
+    _alt = ""
+    if _word in _importlist:
+        _alt = _avloeyserlist[_importlist.index(_word)]
+    return _alt
+
+pdparser = PDParser('https://www.sprakradet.no/sprakhjelp/Skriverad/Avloeysarord/')
 Client = discord.Client()
 client = commands.Bot(command_prefix="#")
 
@@ -27,21 +36,16 @@ async def on_message(message):
     if message.author == client.user:
         return()
 
-    
-    
     _message = message.content.lower()
-    if _message == "rc":
-        await client.send_message(message.channel, "lc")
-    elif "gud bevare konge og fedreland" in _message:
-        await client.send_message(message.channel, ":flag_bv: JA! :flag_bv:")
-    elif "radio" in _message:
-        await client.send_message(message.channel, "STERK OG KLAR!")
-    elif _message == "cito":
-        time.sleep(1)
-        await client.send_message(message.channel, "this is how we do it down in Puerto Rico")
-    elif "kontakt" in _message:
-        _msg = _message.replace("kontakt", "forbindelse")
-        await client.send_message(message.channel, 'Mente du: "' + _msg + '"?')
+    
+    if _message == "#help norsk":
+        await client.send_message(message.channel, "https://www.sprakradet.no/sprakhjelp/Skriverad/Avloeysarord/'")
 
+    _arr = _message.split(" ")    
 
+    for w in _arr:
+        alt = recognize(w, pdparser.importlist, pdparser.avloeyserlist)
+        if len(alt)>0:
+            _message = "Du brukte ordet '{}'. Dette er et lånord, og bør erstattes med et av følgende gode norske alternativer: \n {}".format(w, alt)
+            await client.send_message(message.channel, _message)
 client.run(privatetoken)
