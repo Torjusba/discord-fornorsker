@@ -8,10 +8,7 @@ from pdparser import PDParser
 def recognize(_importlist, _avloeyserlist):
     inp = input("Ord >")
     if inp in _importlist:
-        print("Gjenkjent")
-        index = _importlist.index(inp)
-        print("Index: {}".format(index))
-        alternativ = _avloeyserlist[index]
+        alternativ = _avloeyserlist[_importlist.index(inp)]
         print(alternativ)
 
 
