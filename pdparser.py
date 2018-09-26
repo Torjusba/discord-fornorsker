@@ -4,14 +4,13 @@ import numpy as np
 
 class PDParser:
     
-    def fix_norwegian_letters(self, _word):
-        #æ
-        ae = "Ã¦"
-        #ø
-        oe = "Ã¸"
-        #å
-        aa="Ã¥"
-        return str(_word).replace(ae,"æ").replace(oe,'ø').replace(aa,'å')
+    #Fikser norske bokstaver og gjør alle bokstavene små
+    def fix_word_formatting(self, _word):
+        ae = "Ã¦" #æ
+        oe = "Ã¸" #ø
+        aa="Ã¥" #å
+
+        return str(_word).replace(ae,"æ").replace(oe,'ø').replace(aa,'å').lower()
 
     def __init__(self, _url):
         df = pd.read_html(_url,header=0)[0]
@@ -19,9 +18,18 @@ class PDParser:
 
         self.importlist = list(ddf['Importord'].values())
         self.avloeyserlist = list(ddf['AvlÃ¸serord'].values())
-        
+
+        # Fiks formatering        
         for w in self.avloeyserlist:
-            self.avloeyserlist[self.avloeyserlist.index(w)] = self.fix_norwegian_letters(w)
-    
+            self.avloeyserlist[self.avloeyserlist.index(w)] = self.fix_word_formatting(w)
+
+        #Remove label entries
+        for _w in self.importlist:
+            w=str(_w) #Fikser problemer med at æøå tolkes som float
+            if len(w)==1:
+                self.avloeyserlist.pop(self.importlist.index(w))
+                self.importlist.remove(w)
+                
+
     
     

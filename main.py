@@ -5,17 +5,21 @@
 from pdparser import PDParser
 
 
-def recognize(_importlist, _avloeyserlist):
-    inp = input("Ord >")
-    if inp in _importlist:
-        alternativ = _avloeyserlist[_importlist.index(inp)]
-        print(alternativ)
+def recognize(_word, _importlist, _avloeyserlist):
+    _alt = ""
+    if _word in _importlist:
+        _alt = _avloeyserlist[_importlist.index(_word)]
+    return _alt
 
 
 def main():
     pdparser = PDParser('https://www.sprakradet.no/sprakhjelp/Skriverad/Avloeysarord/')
     while True:
-        recognize(pdparser.importlist, pdparser.avloeyserlist)
+        inputstring = input("Ord >").lower()
+        alt = recognize(inputstring, pdparser.importlist, pdparser.avloeyserlist)
+
+        if len(alt)>0:
+            print("Norske alternativer: \n {}".format(alt))
 
 if __name__=="__main__":
     main()
