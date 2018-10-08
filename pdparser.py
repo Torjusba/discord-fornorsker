@@ -9,7 +9,8 @@ class PDParser:
         ae = "Ã¦" #æ
         oe = "Ã¸" #ø
         aa="Ã¥" #å
-        return str(_word).replace(ae,"æ").replace(oe,'ø').replace(aa,'å').lower()
+        uu='Ã¼' #ü
+        return str(_word).replace(ae,"æ").replace(oe,'ø').replace(aa,'å').replace(uu, 'u').lower()
         
     def remove_parenthesis(self, _word):
         return _word.split('(')[0]
@@ -28,14 +29,12 @@ class PDParser:
         #Remove label entries
         for _w in self.importlist:
             _noparstr = self.remove_parenthesis(str(_w))
-
             w=str(_w) #Fikser problemer med at æøå tolkes som float
             if len(w)==1:
                 self.avloeyserlist.pop(self.importlist.index(w))
                 self.importlist.remove(w)
+            elif _noparstr != w:
+                self.importlist[self.importlist.index(_w)] = _noparstr[:-1].lower()
             else:
-                self.importlist[self.importlist.index(_w)] = _noparstr[:-1]
-
-
-    
+                self.importlist[self.importlist.index(_w)] = w.lower()    
     
