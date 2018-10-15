@@ -3,6 +3,7 @@ from discord.ext.commands import Bot
 from discord.ext import commands
 import asyncio
 import time
+import random
 
 from pdparser import PDParser
 
@@ -17,6 +18,11 @@ Client = discord.Client()
 client = commands.Bot(command_prefix="#")
 
 privatetoken = "NDk0NTQ3NzcxNjI2MzU2NzU4.Dp5-ZQ.KWnfuA7fgEfX48eeWBlIqcxEhY4"
+
+def check_hit(_hitrate):
+	roll = random.randint(0,100)
+	return(roll<=_hitrate)
+
 
 #Show that bot is connected
 @client.event
@@ -33,8 +39,11 @@ async def on_message(message):
 
     _message = message.content.lower()
     
-    if _message == "#help norsk":
-        await client.send_message(message.channel, "https://www.sprakradet.no/sprakhjelp/Skriverad/Avloeysarord/'")
+    if _message == "@språkrådet hjelp":
+        await client.send_message(message.channel, "Svarer på 50% av importord. https://www.sprakradet.no/sprakhjelp/Skriverad/Avloeysarord/'")
+    
+    if not check_hit(50):
+        return()
 
     _arr = _message.split(" ")    
 
