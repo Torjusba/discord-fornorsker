@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import pandas as pd
 import numpy as np
 
@@ -18,9 +20,9 @@ class PDParser:
     def __init__(self, _url):
         df = pd.read_html(_url,header=0)[0]
         ddf = df.to_dict()
-
+        _akey=b'Avl\xc3\xb8serord'.decode("utf-8", "strict")
         self.importlist = list(ddf['Importord'].values())
-        self.avloeyserlist = list(ddf['AvlÃ¸serord'].values())
+        self.avloeyserlist = list(ddf[_akey].values())
 
         # Fiks formatering        
         for w in self.avloeyserlist:

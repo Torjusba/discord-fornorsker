@@ -16,12 +16,7 @@ pdparser = PDParser('https://www.sprakradet.no/sprakhjelp/Skriverad/Avloeysarord
 Client = discord.Client()
 client = commands.Bot(command_prefix="#")
 
-privatetoken = ""
-
-with open("discordbot.token", "r") as f:
-    privatetoken = f.read()
-
-print(privatetoken)
+privatetoken = "NDk0NTQ3NzcxNjI2MzU2NzU4.Dp5-ZQ.KWnfuA7fgEfX48eeWBlIqcxEhY4"
 
 #Show that bot is connected
 @client.event
