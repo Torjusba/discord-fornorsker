@@ -17,7 +17,7 @@ pdparser = PDParser('https://www.sprakradet.no/sprakhjelp/Skriverad/Avloeysarord
 Client = discord.Client()
 client = commands.Bot(command_prefix="#")
 
-privatetoken = "NDk0NTQ3NzcxNjI2MzU2NzU4.Dp5-ZQ.KWnfuA7fgEfX48eeWBlIqcxEhY4"
+privatetoken = ""
 
 def check_hit(_hitrate):
 	roll = random.randint(0,100)
