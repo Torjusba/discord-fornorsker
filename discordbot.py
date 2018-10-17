@@ -21,12 +21,41 @@ client = commands.Bot(command_prefix="#")
 
 privatetoken = getToken()
 
+whitelist = list([
+    "abort",
+    "gate",
+    "host",
+    "hoste",
+    "hosting",
+    "live",
+    "tape",
+    "time",
+    "twitter"
+])
+
 def check_hit(_hitrate):
 	roll = random.randint(0,100)
 	return(roll<=_hitrate)
 
+def check_respond(msg, content):
+    global whitelist
+    if "språkrådet" in content:
+        return True
+    
+    #Drit i irriterende ord
+    for w in whitelist:
+        if w in content:
+            return False
 
-#Show that bot is connected
+    rate = 100
+    if msg.server.large:
+        rate = 20
+    if check_hit(rate):
+        return True
+    return False
+
+
+#Vis at programvareagenten er tilkoblet
 @client.event
 async def on_ready():
     print("Bot is online")
@@ -35,16 +64,24 @@ async def on_ready():
 #Handle messages
 @client.event
 async def on_message(message):
+    global whitelist
     #Do not answer self
     if message.author == client.user:
         return()
 
     _message = message.content.lower()
+
+    if _message == "#språkrådet hjelp":
+        await client.send_message(message.channel, "Svarer på 20% av importord på store servere, 100% på små.")
+        await client.send_message(message.channel, "https://www.sprakradet.no/sprakhjelp/Skriverad/Avloeysarord/")
     
-    if _message == "@språkrådet hjelp":
-        await client.send_message(message.channel, "Svarer på 20% av importord. https://www.sprakradet.no/sprakhjelp/Skriverad/Avloeysarord/'")
-    
-    if not check_hit(20):
+    if _message == "#språkrådet kanalstørrelse":
+        await client.send_message(message.channel, "Stor kanal?: {}".format(message.server.large))
+
+    if _message == "#språkrådet unntak":
+        await client.send_message(message.channel, "Unntak fra retting: {}".format(whitelist))
+
+    if not check_respond(message, _message):
         return()
 
     _arr = _message.split(" ")    
