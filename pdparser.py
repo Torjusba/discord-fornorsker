@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from privatetoken import getDebug
 import pandas as pd
 import numpy as np
 
@@ -20,7 +20,13 @@ class PDParser:
     def __init__(self, _url):
         df = pd.read_html(_url,header=0)[0]
         ddf = df.to_dict()
-        _akey=b'Avl\xc3\xb8serord'.decode("utf-8", "strict")
+        
+        if (getDebug()):
+            _akey= 'Avl\xc3\xb8serord'
+        else:
+            _akey=b'Avl\xc3\xb8serord'.decode("utf-8", "strict")
+        
+
         self.importlist = list(ddf['Importord'].values())
         self.avloeyserlist = list(ddf[_akey].values())
 
@@ -38,5 +44,4 @@ class PDParser:
             elif _noparstr != w:
                 self.importlist[self.importlist.index(_w)] = _noparstr[:-1].lower()
             else:
-                self.importlist[self.importlist.index(_w)] = w.lower()    
-    
+                self.importlist[self.importlist.index(_w)] = w.lower()   
