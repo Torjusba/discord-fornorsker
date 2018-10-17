@@ -1,5 +1,7 @@
 # Discord private token
 *.token
+privatetoken.py
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
