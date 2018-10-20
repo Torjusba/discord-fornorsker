@@ -15,6 +15,12 @@ def recognize(_word, _importlist, _avloeyserlist):
         _alt = _avloeyserlist[_importlist.index(_word)]
     return _alt
 
+def get_alternative(_word, _importlist, _avloeyserlist):
+    return _avloeyserlist[_importlist.index(_word)]
+    
+
+
+
 pdparser = PDParser('https://www.sprakradet.no/sprakhjelp/Skriverad/Avloeysarord/')
 Client = discord.Client()
 client = commands.Bot(command_prefix="#")
@@ -91,9 +97,12 @@ async def on_message(message):
 #            _message = "Du brukte ordet 'yeet'. Dette er et lånord, og bør erstattes med å bare dø"
 #            await client.send_message(message.channel, _message)
     
-    for w in _arr:
-        alt = recognize(w, pdparser.importlist, pdparser.avloeyserlist)
-        if len(alt)>0:
-            _message = "Du brukte ordet '{}'. Dette er et lånord, og bør erstattes med et av følgende gode norske alternativer: \n {}".format(w, alt)
-            await client.send_message(message.channel, _message)
+    for w in pdparser.importlist:
+        if w in _message:
+            if w == "nan": continue
+            alt = get_alternative(w, pdparser.importlist, pdparser.avloeyserlist)
+            _msgtosend = "Du brukte ordet '{}'. Dette er et lånord, og bør erstattes med et av følgende gode norske alternativer: \n {}".format(w, alt)
+    await client.send_message(message.channel, _msgtosend)
+            
+
 client.run(privatetoken)

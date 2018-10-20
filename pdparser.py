@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from privatetoken import getDebug
+from privatetoken import doUglyUtfHack
 import pandas as pd
 import numpy as np
 
@@ -21,7 +21,7 @@ class PDParser:
         df = pd.read_html(_url,header=0)[0]
         ddf = df.to_dict()
         
-        if (getDebug()):
+        if not (doUglyUtfHack()):
             _akey= 'Avl\xc3\xb8serord'
         else:
             _akey=b'Avl\xc3\xb8serord'.decode("utf-8", "strict")

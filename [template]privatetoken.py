@@ -1,5 +1,5 @@
 def getToken():
     return "PRIVATETOKEN"
 
-def getDebug():
+def doUglyUtfHack():
     return False
