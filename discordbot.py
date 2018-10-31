@@ -117,7 +117,8 @@ bigserver_whitelist = list([
 	"webserver",
 	"whiteboard",
 	"widescreen",
-	"wizard"
+	"wizard",
+    "@"
 ])
 
 smallserver_whitelist = list([
@@ -129,7 +130,8 @@ smallserver_whitelist = list([
     "live",
     "tape",
     "time",
-    "twitter"
+    "twitter",
+    "@"
 ])
 
 def check_hit(_hitrate):
