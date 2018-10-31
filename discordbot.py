@@ -27,7 +27,100 @@ client = commands.Bot(command_prefix="#")
 
 privatetoken = getToken()
 
-whitelist = list([
+bigserver_whitelist = list([
+    "abort",
+	"access",
+	"allround",
+	"aircondition",
+	"audition",
+	"backlog",
+	"backslash",
+	"backup",
+	"barbecue",
+	"benchmark",
+	"boom",
+	"booster",
+	"boote",
+	"browser",
+	"bug",
+	"build",
+	"button",
+	"cap",
+	"case",
+	"chat",
+	"chatte",
+	"chip",
+	"chips",
+	"clickbait",
+	"clutch",
+	"connector",
+	"controller",
+	"cookie",
+	"crew",
+	"debug",
+	"design",
+	"driver",
+	"equalizer",
+	"fan",
+	"franchise",
+	"gate",
+	"green",
+	"guide",
+	"hardware",
+	"highlight",
+	"host",
+	"hoste",
+	"hosting",
+	"laptop",
+	"link",
+	"live",
+	"makeup",
+	"mashup",
+	"match",
+	"matche",
+	"multitasking",
+	"mute",
+	"netbook",
+	"offline",
+	"online",
+	"paring",
+	"patch",
+	"pitch",
+	"polish",
+	"poster",
+	"printe",
+	"rack",
+	"release",
+	"roaming",
+	"sample",
+	"sampling",
+	"scanne",
+	"scanner",
+	"server",
+	"skins",
+	"slash",
+	"sound",
+	"standby",
+	"support",
+	"tab",
+	"talkshow",
+	"tape",
+	"themes",
+	"thumbnail",
+	"tights",
+	"time",
+	"touchpad",
+	"trigge",
+	"trigger",
+	"tutorial",
+	"twitter",
+	"webserver",
+	"whiteboard",
+	"widescreen",
+	"wizard"
+])
+
+smallserver_whitelist = list([
     "abort",
     "gate",
     "host",
@@ -44,20 +137,29 @@ def check_hit(_hitrate):
 	return(roll<=_hitrate)
 
 def check_respond(msg, content):
-    global whitelist
+    global bigserver_whitelist
+    global smallserver_whitelist
+
     if "språkrådet" in content:
         return True
+
+    # Tilpass til store og små servere
+    if msg.server.large:
+        rate = 20
+        whitelist = bigserver_whitelist
+    else:
+        whitelist = smallserver_whitelist
+        rate = 100
     
     #Drit i irriterende ord
     for w in whitelist:
         if w in content:
             return False
 
-    rate = 100
-    if msg.server.large:
-        rate = 20
+    # Treffhyppighet
     if check_hit(rate):
         return True
+
     return False
 
 
@@ -70,7 +172,8 @@ async def on_ready():
 #Handle messages
 @client.event
 async def on_message(message):
-    global whitelist
+    global smallserver_whitelist
+    global bigserver_whitelist
     #Do not answer self
     if message.author == client.user:
         return()
@@ -85,6 +188,10 @@ async def on_message(message):
         await client.send_message(message.channel, "Stor kanal?: {}".format(message.server.large))
 
     if _message == "#språkrådet unntak":
+        if message.server.large:
+            whitelist = bigserver_whitelist
+        else:
+            whitelist = smallserver_whitelist
         await client.send_message(message.channel, "Unntak fra retting: {}".format(whitelist))
 
     if not check_respond(message, _message):
