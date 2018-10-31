@@ -42,6 +42,10 @@ class PDParser:
                 self.avloeyserlist.pop(self.importlist.index(w))
                 self.importlist.remove(w)
             elif _noparstr != w:
-                self.importlist[self.importlist.index(_w)] = _noparstr[:-1].lower()
+                if _noparstr[-1] == " ":
+                    self.importlist[self.importlist.index(_w)] = _noparstr[:-1].lower()
+                else:
+                    self.importlist[self.importlist.index(_w)] = _noparstr.lower()
+                    
             else:
                 self.importlist[self.importlist.index(_w)] = w.lower()   
