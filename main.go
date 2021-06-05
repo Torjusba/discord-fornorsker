@@ -8,9 +8,15 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/torjusba/discord-fornorsker/pkg/logging"
+	"github.com/torjusba/discord-fornorsker/pkg/wordlist"
 )
 
 func main() {
+	logging.Log("Initializing word list...")
+
+	wordlist.Init()
+
+	logging.Log("Word list initialized")
 	logging.Log("Initializing bot...")
 	var Token string
 	flag.StringVar(&Token, "t", "", "Bot Token")
@@ -47,5 +53,8 @@ func handleReceivedMessage(session *discordgo.Session, msg *discordgo.MessageCre
 		return
 	}
 
-	session.ChannelMessageSendReply(msg.ChannelID, "ok", msg.MessageReference)
+	replacement, exists := wordlist.LookupReplacement(msg.Content)
+	if exists {
+		session.ChannelMessageSendReply(msg.ChannelID, replacement, msg.MessageReference)
+	}
 }
