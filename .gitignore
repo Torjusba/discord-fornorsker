@@ -1,10 +1,7 @@
-# Discord private token
-*.token
-privatetoken.py
 
+# Executable
+discord-fornorsker
 
-# virtualenv
-venv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
