@@ -39,7 +39,7 @@ func Init() {
 		replacement := s.Find("td").Last().Text()
 
 		// Skip "letter titles"
-		if len([]rune(word)) == 3 {
+		if len([]rune(word)) <= 3 {
 			return
 		}
 
@@ -48,13 +48,13 @@ func Init() {
 
 }
 
-// Returns (replacement, ok)
-func LookupReplacement(word string) (string, bool) {
-	replacement, ok := g_words[strings.ToLower(word)]
-	if ok {
-		return replacement, true
-	} else {
-		return "", false
+func GetNeededReplacements(message string) map[string]string {
+	relevantReplacements := make(map[string]string)
+	lowerCaseMessage := strings.ToLower(message)
+	for word, replacement := range g_words {
+		if strings.Contains(lowerCaseMessage, word) {
+			relevantReplacements[word] = replacement
+		}
 	}
-
+	return relevantReplacements
 }

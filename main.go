@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -53,8 +54,9 @@ func handleReceivedMessage(session *discordgo.Session, msg *discordgo.MessageCre
 		return
 	}
 
-	replacement, exists := wordlist.LookupReplacement(msg.Content)
-	if exists {
-		session.ChannelMessageSendReply(msg.ChannelID, replacement, msg.MessageReference)
+	neededReplacements := wordlist.GetNeededReplacements(msg.Content)
+	for word, replacement := range neededReplacements {
+		reply := fmt.Sprintf("Heisann! %s \nDu skrev '%s', som er lånt fra engelsk. Jeg anbefaler deg å bruke det norske alternativet:\n%s", msg.Author.Mention(), word, replacement)
+		session.ChannelMessageSendReply(msg.ChannelID, reply, msg.MessageReference)
 	}
 }
