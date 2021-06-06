@@ -10,7 +10,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/torjusba/discord-fornorsker/pkg/logging"
-	"github.com/torjusba/discord-fornorsker/pkg/util"
+	"github.com/torjusba/discord-fornorsker/pkg/responses"
 	"github.com/torjusba/discord-fornorsker/pkg/wordlist"
 )
 
@@ -61,14 +61,14 @@ func handleReceivedMessage(session *discordgo.Session, msg *discordgo.MessageCre
 		command := strings.Split(strings.ToLower(msg.Content), " ")[1]
 		switch command {
 		case "hjelp":
-			session.ChannelMessageSendReply(msg.ChannelID, util.HelpMessage, msg.MessageReference)
+			session.ChannelMessageSendReply(msg.ChannelID, responses.HelpMessage, msg.MessageReference)
 			return
 		case "kildekode":
-			session.ChannelMessageSendReply(msg.ChannelID, util.SourceCodeMessage, msg.MessageReference)
+			session.ChannelMessageSendReply(msg.ChannelID, responses.SourceCodeMessage, msg.MessageReference)
 			return
 		default:
-			session.ChannelMessageSendReply(msg.ChannelID, util.UndefinedCommandMessage, msg.MessageReference)
-
+			session.ChannelMessageSendReply(msg.ChannelID, responses.UndefinedCommandMessage, msg.MessageReference)
+			return
 		}
 	}
 
