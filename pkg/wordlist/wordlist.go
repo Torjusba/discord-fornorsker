@@ -1,11 +1,18 @@
 package wordlist
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/torjusba/discord-fornorsker/pkg/logging"
+)
+
+type Mode string
+
+const (
+	MODE_UNDEFINED Mode = "undefined"
+	MODE_NETWORK        = "network"
 )
 
 var (
@@ -13,23 +20,35 @@ var (
 	g_words   map[string]string
 	g_inited  bool = false
 	g_counter      = 0
+	g_mode    Mode = MODE_UNDEFINED
 )
 
-func Init() {
+func Init(mode Mode) {
+	g_mode = mode
+	defer func() { g_inited = true }()
 	g_words = make(map[string]string)
 
+	switch g_mode {
+	case MODE_NETWORK:
+		initWordlistFromWebsite()
+		return
+	default:
+		panic(fmt.Sprintf("Mode '%s' not recognized", mode))
+	}
+
+}
+
+func initWordlistFromWebsite() {
 	response, err := http.Get("https://www.sprakradet.no/sprakhjelp/Skriverad/Avloeysarord/")
 	if err != nil {
-		logging.Error("Error getting word list", err)
-		return
+		panic(fmt.Sprintf("Error getting word list:\n %s", err))
 	}
 	defer response.Body.Close()
 
 	document, err := goquery.NewDocumentFromResponse(response)
 
 	if err != nil {
-		logging.Error("Error generating document from word list", err)
-		return
+		panic(fmt.Sprintf("Error generating document from word list:\n %s", err))
 	}
 
 	// Kinda hacky, but this page should only contain one table, which is the
@@ -45,16 +64,40 @@ func Init() {
 
 		g_words[strings.ToLower(word)] = replacement
 	})
-
 }
 
-func GetNeededReplacements(message string) map[string]string {
-	relevantReplacements := make(map[string]string)
-	lowerCaseMessage := strings.ToLower(message)
-	for word, replacement := range g_words {
-		if strings.Contains(lowerCaseMessage, word) {
-			relevantReplacements[word] = replacement
+func GetBorrowedWords() []string {
+	if !g_inited {
+		panic("Wordlist used before initialization")
+	}
+	borrowedWords := make([]string, 0)
+
+	switch g_mode {
+	case MODE_NETWORK:
+		for borrowedWord := range g_words {
+			borrowedWords = append(borrowedWords, borrowedWord)
 		}
 	}
-	return relevantReplacements
+	return borrowedWords
+}
+
+func GetReplacement(word string) string {
+	if !g_inited {
+		panic("Wordlist used before initialization")
+	}
+	switch g_mode {
+	case MODE_NETWORK:
+		return getReplacement_basic(word)
+	default:
+		panic(fmt.Sprintf("Replacements in mode '%s' not implemented", g_mode))
+	}
+}
+
+func getReplacement_basic(word string) string {
+	replacement, ok := g_words[strings.ToLower(word)]
+	if ok {
+		return replacement
+	} else {
+		panic(fmt.Sprintf("Could not find replacement for word '%s'", word))
+	}
 }

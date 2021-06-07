@@ -9,23 +9,25 @@ import (
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/torjusba/discord-fornorsker/pkg/analysis"
 	"github.com/torjusba/discord-fornorsker/pkg/logging"
 	"github.com/torjusba/discord-fornorsker/pkg/responses"
 	"github.com/torjusba/discord-fornorsker/pkg/wordlist"
 )
 
 func main() {
-	logging.Log("Initializing word list...")
-
-	wordlist.Init()
-
-	logging.Log("Word list initialized")
-	logging.Log("Initializing bot...")
-	var Token string
-	flag.StringVar(&Token, "t", "", "Bot Token")
+	var token string
+	var mode string
+	flag.StringVar(&token, "t", "", "Bot Token")
+	flag.StringVar(&mode, "w", "network", "Wordlist mode")
 	flag.Parse()
 
-	discordSession, err := discordgo.New("Bot " + Token)
+	logging.Log("Initializing word list...")
+	wordlist.Init(wordlist.Mode(mode))
+	logging.Log("Word list initialized")
+
+	logging.Log("Initializing bot...")
+	discordSession, err := discordgo.New("Bot " + token)
 	if err != nil {
 		logging.Error("Error creating Discord session", err)
 		return
@@ -41,10 +43,12 @@ func main() {
 		return
 	}
 
+	logging.Log("Bot initialized")
 	logging.Log("The bot is now running. Press CTRL-C to exit.")
-	signalChan := make(chan os.Signal, 1)
-	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
-	<-signalChan
+
+	signalCh := make(chan os.Signal, 1)
+	signal.Notify(signalCh, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
+	<-signalCh
 	logging.Log("Exited cleanly")
 
 }
@@ -72,8 +76,10 @@ func handleReceivedMessage(session *discordgo.Session, msg *discordgo.MessageCre
 		}
 	}
 
-	neededReplacements := wordlist.GetNeededReplacements(msg.Content)
-	for word, replacement := range neededReplacements {
+	// Actual borrowed word replacement
+	borrowedWordsFound := analysis.WhichWordsAreInSentence(msg.Content, wordlist.GetBorrowedWords())
+	for _, word := range borrowedWordsFound {
+		replacement := wordlist.GetReplacement(word)
 		reply := fmt.Sprintf("Heisann! %s \nDu skrev '%s', som er lånt fra engelsk. Jeg anbefaler deg å bruke det norske alternativet:\n%s", msg.Author.Mention(), word, replacement)
 		session.ChannelMessageSendReply(msg.ChannelID, reply, msg.MessageReference)
 	}
