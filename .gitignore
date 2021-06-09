@@ -1,6 +1,7 @@
 
-# Executable
-discord-fornorsker
+# Executable, wordlists
+bin/*
+
 
 
 # Byte-compiled / optimized / DLL files

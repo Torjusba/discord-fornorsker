@@ -15,11 +15,16 @@ import (
 	"github.com/torjusba/discord-fornorsker/pkg/wordlist"
 )
 
+var (
+	g_debug bool = false
+)
+
 func main() {
 	var token string
 	var mode string
 	flag.StringVar(&token, "t", "", "Bot Token")
-	flag.StringVar(&mode, "w", "simple", "Wordlist mode")
+	flag.StringVar(&mode, "m", "simple", "Wordlist mode")
+	flag.BoolVar(&g_debug, "d", false, "Debug mode")
 	flag.Parse()
 
 	logging.Log("Initializing word list...")
@@ -43,7 +48,7 @@ func main() {
 		return
 	}
 
-	logging.Log("Bot initialized")
+	logging.Log(fmt.Sprintf("Bot initialized with %d covered words", len(wordlist.GetBorrowedWords())))
 	logging.Log("The bot is now running. Press CTRL-C to exit.")
 
 	signalCh := make(chan os.Signal, 1)
@@ -78,6 +83,20 @@ func handleReceivedMessage(session *discordgo.Session, msg *discordgo.MessageCre
 
 	// Actual borrowed word replacement
 	borrowedWordsFound := analysis.WhichWordsAreInSentence(msg.Content, wordlist.GetBorrowedWords())
+
+	if g_debug {
+		if len(borrowedWordsFound) == 0 {
+			logging.Log("Message with no borrowed words received")
+		} else {
+			logMessage := "Message with borrowed words received:"
+			for _, word := range borrowedWordsFound {
+				logMessage = logMessage + "\n- " + word
+			}
+			logging.Log(logMessage)
+		}
+
+	}
+
 	for _, word := range borrowedWordsFound {
 		replacement := wordlist.GetReplacement(word)
 		reply := fmt.Sprintf("Heisann! %s \nDu skrev '%s', som er lånt fra engelsk. Jeg anbefaler deg å bruke det norske alternativet:\n%s", msg.Author.Mention(), word, replacement)

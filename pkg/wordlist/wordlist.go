@@ -2,7 +2,9 @@ package wordlist
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -13,6 +15,7 @@ type Mode string
 const (
 	MODE_UNDEFINED Mode = "undefined"
 	MODE_SIMPLE         = "simple"
+	MODE_FILE           = "file"
 )
 
 var (
@@ -26,19 +29,20 @@ var (
 func Init(mode Mode) {
 	g_mode = mode
 	defer func() { g_inited = true }()
-	g_words = make(map[string]string)
 
 	switch g_mode {
 	case MODE_SIMPLE:
-		initWordlistFromWebsite()
+		createWordlistFromWebsite()
+		return
+	case MODE_FILE:
+		g_words = createWordlistFromFile("custom-wordlist.csv")
 		return
 	default:
 		panic(fmt.Sprintf("Mode '%s' not recognized", mode))
 	}
-
 }
 
-func initWordlistFromWebsite() {
+func createWordlistFromWebsite() {
 	response, err := http.Get("https://www.sprakradet.no/sprakhjelp/Skriverad/Avloeysarord/")
 	if err != nil {
 		panic(fmt.Sprintf("Error getting word list:\n %s", err))
@@ -65,6 +69,32 @@ func initWordlistFromWebsite() {
 		g_words[strings.ToLower(word)] = replacement
 	})
 }
+func createWordlistFromFile(filepath string) map[string]string {
+
+	file, err := os.Open(filepath)
+	if err != nil {
+		panic(fmt.Sprintf("Could not open file: %s", err))
+	}
+
+	data, err := ioutil.ReadAll(file)
+	if err != nil {
+		panic(fmt.Sprintf("Could not read from file: %s", err))
+	}
+
+	newWordlist := make(map[string]string)
+	wordlistAsString := string(data)
+
+	lines := strings.Split(wordlistAsString, "\n")
+	for _, line := range lines {
+		wordAndReplacement := strings.Split(line, "|")
+		if len(wordAndReplacement) == 2 {
+			word := wordAndReplacement[0]
+			replacement := wordAndReplacement[1]
+			newWordlist[word] = replacement
+		}
+	}
+	return newWordlist
+}
 
 func GetBorrowedWords() []string {
 	if !g_inited {
@@ -72,11 +102,8 @@ func GetBorrowedWords() []string {
 	}
 	borrowedWords := make([]string, 0)
 
-	switch g_mode {
-	case MODE_SIMPLE:
-		for borrowedWord := range g_words {
-			borrowedWords = append(borrowedWords, borrowedWord)
-		}
+	for borrowedWord := range g_words {
+		borrowedWords = append(borrowedWords, borrowedWord)
 	}
 	return borrowedWords
 }
@@ -85,12 +112,7 @@ func GetReplacement(word string) string {
 	if !g_inited {
 		panic("Wordlist used before initialization")
 	}
-	switch g_mode {
-	case MODE_SIMPLE:
-		return getReplacement_basic(word)
-	default:
-		panic(fmt.Sprintf("Replacements in mode '%s' not implemented", g_mode))
-	}
+	return getReplacement_basic(word)
 }
 
 func getReplacement_basic(word string) string {
@@ -100,4 +122,13 @@ func getReplacement_basic(word string) string {
 	} else {
 		panic(fmt.Sprintf("Could not find replacement for word '%s'", word))
 	}
+}
+
+// Bar (|) Separated Values since commas and semicolons are used in the data
+func Dump() string {
+	var dataToExport string
+	for word, replacement := range g_words {
+		dataToExport = dataToExport + fmt.Sprintf("\n%s|%s", word, replacement)
+	}
+	return dataToExport
 }
