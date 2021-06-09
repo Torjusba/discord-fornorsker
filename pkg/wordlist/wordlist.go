@@ -12,7 +12,7 @@ type Mode string
 
 const (
 	MODE_UNDEFINED Mode = "undefined"
-	MODE_NETWORK        = "network"
+	MODE_SIMPLE         = "simple"
 )
 
 var (
@@ -29,7 +29,7 @@ func Init(mode Mode) {
 	g_words = make(map[string]string)
 
 	switch g_mode {
-	case MODE_NETWORK:
+	case MODE_SIMPLE:
 		initWordlistFromWebsite()
 		return
 	default:
@@ -73,7 +73,7 @@ func GetBorrowedWords() []string {
 	borrowedWords := make([]string, 0)
 
 	switch g_mode {
-	case MODE_NETWORK:
+	case MODE_SIMPLE:
 		for borrowedWord := range g_words {
 			borrowedWords = append(borrowedWords, borrowedWord)
 		}
@@ -86,7 +86,7 @@ func GetReplacement(word string) string {
 		panic("Wordlist used before initialization")
 	}
 	switch g_mode {
-	case MODE_NETWORK:
+	case MODE_SIMPLE:
 		return getReplacement_basic(word)
 	default:
 		panic(fmt.Sprintf("Replacements in mode '%s' not implemented", g_mode))

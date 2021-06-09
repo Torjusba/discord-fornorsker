@@ -19,7 +19,7 @@ func main() {
 	var token string
 	var mode string
 	flag.StringVar(&token, "t", "", "Bot Token")
-	flag.StringVar(&mode, "w", "network", "Wordlist mode")
+	flag.StringVar(&mode, "w", "simple", "Wordlist mode")
 	flag.Parse()
 
 	logging.Log("Initializing word list...")
