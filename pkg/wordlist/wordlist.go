@@ -35,7 +35,7 @@ func Init(mode Mode) {
 		createWordlistFromWebsite()
 		return
 	case MODE_FILE:
-		g_words = createWordlistFromFile("custom-wordlist.csv")
+		g_words = createWordlistFromFile("custom-wordlist.tsv")
 		return
 	default:
 		panic(fmt.Sprintf("Mode '%s' not recognized", mode))
@@ -86,7 +86,7 @@ func createWordlistFromFile(filepath string) map[string]string {
 
 	lines := strings.Split(wordlistAsString, "\n")
 	for _, line := range lines {
-		wordAndReplacement := strings.Split(line, "|")
+		wordAndReplacement := strings.Split(line, "\t")
 		if len(wordAndReplacement) == 2 {
 			word := wordAndReplacement[0]
 			replacement := wordAndReplacement[1]
@@ -128,7 +128,7 @@ func getReplacement_basic(word string) string {
 func Dump() string {
 	var dataToExport string
 	for word, replacement := range g_words {
-		dataToExport = dataToExport + fmt.Sprintf("\n%s|%s", word, replacement)
+		dataToExport = dataToExport + fmt.Sprintf("\n%s\t%s", word, replacement)
 	}
 	return dataToExport
 }

@@ -11,7 +11,7 @@ import (
 func main() {
 
 	var outputPath string
-	flag.StringVar(&outputPath, "o", "wordlist.csv", "Specify the output file")
+	flag.StringVar(&outputPath, "o", "wordlist.tsv", "Specify the output file")
 
 	fmt.Printf("Generating wordlist at: %s", outputPath)
 	var outputFile *os.File
