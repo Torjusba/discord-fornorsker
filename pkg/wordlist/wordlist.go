@@ -90,7 +90,7 @@ func createWordlistFromFile(filepath string) map[string]string {
 		if len(wordAndReplacement) == 2 {
 			word := wordAndReplacement[0]
 			replacement := wordAndReplacement[1]
-			newWordlist[word] = replacement
+			newWordlist[strings.ToLower(word)] = replacement
 		}
 	}
 	return newWordlist
