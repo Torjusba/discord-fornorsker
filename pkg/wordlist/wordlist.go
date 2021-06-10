@@ -85,7 +85,7 @@ func createWordlistFromFile(filepath string) map[string]string {
 	wordlistAsString := string(data)
 
 	lines := strings.Split(wordlistAsString, "\n")
-	for _, line := range lines {
+	for _, line := range lines[1:] {
 		wordAndReplacement := strings.Split(line, "\t")
 		if len(wordAndReplacement) == 2 {
 			word := wordAndReplacement[0]
